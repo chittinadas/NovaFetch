@@ -1,0 +1,1 @@
+$ErrorActionPreference='Stop'; ctest --test-dir build -C Release --output-on-failure\n

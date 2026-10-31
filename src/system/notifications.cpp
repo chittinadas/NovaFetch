@@ -1,0 +1,1 @@
+#include "notifications.h"\nnamespace novafetch {void notify(const std::wstring&){} }\n

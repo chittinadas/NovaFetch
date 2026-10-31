@@ -1,0 +1,5 @@
+find_package(GTest CONFIG REQUIRED)
+add_executable(novafetch_tests test_url_parser.cpp test_file_writer.cpp test_download_manager.cpp test_metadata.cpp test_http_client.cpp)
+target_link_libraries(novafetch_tests PRIVATE novafetch_core GTest::gtest_main)
+include(GoogleTest)
+gtest_discover_tests(novafetch_tests)

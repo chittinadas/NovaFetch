@@ -1,0 +1,1 @@
+const http=require('http');http.createServer((req,res)=>{if(req.url==='/health'){res.end('ok');return;}if(req.url==='/sample.bin'){const b=Buffer.alloc(1024*1024,78);res.writeHead(200,{'content-length':b.length});res.end(b);return;}res.writeHead(404);res.end('Not found');}).listen(8765,()=>console.log('http://localhost:8765'));

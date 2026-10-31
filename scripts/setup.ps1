@@ -1,0 +1,1 @@
+$ErrorActionPreference='Stop'; cmake --preset windows-release\n

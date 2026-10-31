@@ -1,0 +1,1 @@
+Portable user data will live beside the executable in NovaFetchData. Resume metadata and settings persistence are not implemented in this prototype.\n

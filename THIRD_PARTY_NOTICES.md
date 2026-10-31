@@ -1,0 +1,1 @@
+Uses libcurl, nlohmann/json and GoogleTest. Each dependency retains its own license; see its upstream distribution and vcpkg package metadata.

@@ -1,0 +1,1 @@
+#pragma once\nnamespace novafetch {class DownloadList{};}\n

@@ -1,0 +1,11 @@
+{
+  "name": "novafetch-tools",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "test-server": "node scripts/test_server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
