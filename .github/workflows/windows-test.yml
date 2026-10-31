@@ -1,0 +1,11 @@
+name: Windows Tests
+on: [pull_request, workflow_dispatch]
+jobs:
+ test:
+  runs-on: windows-latest
+  steps:
+   - uses: actions/checkout@v4
+   - uses: lukka/run-vcpkg@v11
+   - run: cmake --preset windows-release
+   - run: cmake --build --preset windows-release
+   - run: ctest --test-dir build -C Release --output-on-failure
