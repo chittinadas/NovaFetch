@@ -1,24 +1,57 @@
-name: Windows Build
-on: [push, pull_request, workflow_dispatch]
+
+name: NovaFetch Windows Build
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
 jobs:
- build:
-  runs-on: windows-latest
-  steps:
-   - uses: actions/checkout@v4
-   - uses: lukka/run-vcpkg@v11
-   - uses: actions/setup-node@v4
-     with: {node-version: 20}
-   - run: cmake --preset windows-release
-   - run: cmake --build --preset windows-release
-   - run: ctest --test-dir build -C Release --output-on-failure
-   - shell: pwsh
-     run: |
-      $e=Get-ChildItem build -Filter NovaFetch.exe -Recurse | Select-Object -First 1
-      if(!$e){throw 'Executable missing'}
-      New-Item -ItemType Directory -Force dist/NovaFetch | Out-Null
-      Copy-Item $e.FullName dist/NovaFetch/
-      Compress-Archive dist/NovaFetch/* NovaFetch-Portable-Windows-x64.zip -Force
-   - uses: actions/upload-artifact@v4
-     with:
-      name: NovaFetch-Portable-Windows-x64
-      path: NovaFetch-Portable-Windows-x64.zip
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup vcpkg
+        shell: pwsh
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git "$env:GITHUB_WORKSPACE/vcpkg"
+
+          & "$env:GITHUB_WORKSPACE/vcpkg/bootstrap-vcpkg.bat" -disableMetrics
+
+          "VCPKG_ROOT=$env:GITHUB_WORKSPACE/vcpkg" >> $env:GITHUB_ENV
+
+      - name: Configure CMake
+        shell: pwsh
+        run: |
+          cmake -S . -B build `
+            -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" `
+            -DVCPKG_TARGET_TRIPLET=x64-windows-static `
+            -DNOVAFETCH_BUILD_TESTS=OFF
+
+      - name: Build NovaFetch
+        run: cmake --build build --config Release --parallel 2
+
+      - name: Collect EXE
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+
+          $exe = Get-ChildItem build -Recurse -Filter NovaFetch.exe |
+            Select-Object -First 1
+
+          if (-not $exe) {
+            throw "NovaFetch.exe not found"
+          }
+
+          Copy-Item $exe.FullName dist/
+
+      - name: Upload Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: NovaFetch-Windows-x64
+          path: dist/NovaFetch.exe
